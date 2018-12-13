@@ -17,11 +17,31 @@
                 </thead>
                 <tbody>
                 {% for supplier in supplier_results %}
+
+                    <!-- CMM -- Modified the following code so that the supplier name is shown once
+                     in the first table row, with the associated representative names and emails shown in 
+                     the second and third columns of subsequent table rows.
+                     Note that the representative data corresponding to the supplier is given by
+                     supplier.representative_set, based on the foreign key relation between the two 
+                     database tables.  -->
                     <tr>
                         <td>{{ supplier.name }}</td>
-                        <td>{{ supplier.representative_name }}</td>
-                        <td>{{ supplier.representative_email }}</td>
+                        <td></td>
+                        <td></td>
                     </tr>
+                    {% for rep in supplier.representative_set.all %}
+                        <tr>
+                            <td></td>
+                            <td>{{ rep.representative_name }}</td>
+                            <td>{{ rep.representative_email }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                              <td></td>
+                              <td colspan="2">No representatives found.</td>
+                        </tr>
+                    {% endfor %}
+
                 {% empty %}
                     <tr>
                         <td colspan="3">No authorized suppliers found.</td>

@@ -2,11 +2,16 @@ from django.contrib import admin
 from django.shortcuts import render_to_response, get_object_or_404
 
 from procurement.admin_forms import ComponentAdminForm
-from procurement.models import Supplier, Component
+
+# CMM -- Added the Representative model class
+from procurement.models import Supplier, Component, Representative
 
 
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'representative_name', 'representative_email', 'is_authorized', 'updated')
+# CMM -- Remove the representative_name and representative_email from this class as they now
+#        belong to Representative and not Supplier
+#    list_display = ('name', 'representative_name', 'representative_email', 'is_authorized', 'updated')
+    list_display = ('name', 'is_authorized', 'updated')
     filter_horizonal = ('components',)
 
 
@@ -27,5 +32,13 @@ class ComponentAdmin(admin.ModelAdmin):
         })
 
 
+# CMM -- Add a RepresentativeAdmin class so that representative data can be maintained from the 
+#        admin site
+class RepresentativeAdmin(admin.ModelAdmin):
+    list_display = ('representative_name', 'representative_email', 'supplier', 'updated')
+
+
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(Component, ComponentAdmin)
+# CMM -- Register the RepresentativeAdmin class with the Representative model class
+admin.site.register(Representative, RepresentativeAdmin)

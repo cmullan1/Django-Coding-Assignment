@@ -57,12 +57,44 @@ class Supplier(DashboardModel):
     Model which represents an individual or organisation which supplies components
     """
     name = models.CharField(max_length=255)
-    representative_name = models.CharField(max_length=255, null=True, blank=True)
-    representative_email = models.EmailField(max_length=255, null=True, blank=True)
+    # CMM -- Moved the representative name and email to the the Representative model
+    #representative_name = models.CharField(max_length=255, null=True, blank=True)
+    #representative_email = models.EmailField(max_length=255, null=True, blank=True)
     is_authorized = models.BooleanField()
+    
+    """
+    CMM -- Added ordering by name for consistency with the other model classes and
+    to order the displayed suppliers alphabetically
+    """
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         return '{}'.format(self.name)
+
+
+"""
+CMM -- Added the Representative model class to allow each supplier to have more than
+       one representative
+"""
+class Representative(DashboardModel):
+    """
+    CMM -- Model which represents a supplier's representative.
+    """
+    representative_name = models.CharField(max_length=255)
+    representative_email = models.EmailField(max_length=255, null=True, blank=True)
+
+    """
+    CMM -- Added the supplier as a foreign key.  Allowed cascading deletes (if the supplier is deleted, 
+           associated representatives are also deleted.
+    """
+    supplier = models.ForeignKey('Supplier', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ("representative_name",)
+
+    def __str__(self):
+        return '{}'.format(self.representative_name)
 
 
 class Component(DashboardModel):

@@ -1,7 +1,8 @@
 from django.views.generic import FormView, TemplateView
 
 from procurement.forms import ComponentSearchForm
-from procurement.models import Supplier, Component
+# CMM -- Added Representative model class
+from procurement.models import Supplier, Component, Representative
 
 
 class ComponentSearchView(FormView):
@@ -24,6 +25,13 @@ class ComponentSearchView(FormView):
         except Component.DoesNotExist:
             components_last_updated = ''
 
+# CMM -- Added "last updated" information for representatives
+        try:
+            representatives_last_updated = Representative.objects.latest('updated').time_since_update
+        except Representative.DoesNotExist:
+            representatives_last_updated = ''
+
+# CMM -- Added count and "last updated" information for representatives
         context.update({
             'page_name': 'Component Search',
             'component': self.component,
@@ -32,6 +40,8 @@ class ComponentSearchView(FormView):
             'suppliers_last_updated': suppliers_last_updated,
             'component_count': Component.objects.all().count(),
             'components_last_updated': components_last_updated,
+            'representative_count': Representative.objects.all().count(),
+            'representatives_last_updated': representatives_last_updated,
         })
         return context
 
